@@ -35,9 +35,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/layanan/read', [LayananController::class, 'index']);
 
+    Route::get('/pegawai/read', [PegawaiController::class, 'index']);
+
     Route::middleware('admin')->group(function () {
         Route::post('/pegawai/create', [PegawaiController::class, 'store']);
-        Route::get('/pegawai/read', [PegawaiController::class, 'index']);
         Route::post('/pegawai/update', [PegawaiController::class, 'update']);
         Route::delete('/pegawai/delete/{id}', [PegawaiController::class, 'destroy']);
 
