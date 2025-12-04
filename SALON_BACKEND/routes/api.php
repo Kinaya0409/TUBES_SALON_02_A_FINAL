@@ -33,6 +33,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/pembayaran/read', [PembayaranController::class, 'index']);
     Route::get('/pembayaran/pendapatan', [PembayaranController::class, 'totalPendapatan']);
 
+    Route::get('/layanan/read', [LayananController::class, 'index']);
+
     Route::middleware('admin')->group(function () {
         Route::post('/pegawai/create', [PegawaiController::class, 'store']);
         Route::get('/pegawai/read', [PegawaiController::class, 'index']);
@@ -40,7 +42,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/pegawai/delete/{id}', [PegawaiController::class, 'destroy']);
 
         Route::post('/layanan/create', [LayananController::class, 'store']);
-        Route::get('/layanan/read', [LayananController::class, 'index']);
         Route::post('/layanan/update', [LayananController::class, 'update']);
         Route::delete('/layanan/delete/{id}', [LayananController::class, 'destroy']);
     });
