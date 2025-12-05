@@ -8,23 +8,24 @@ use Illuminate\Http\Request;
 class PemesananController extends Controller
 {
     public function index()
-    {
-        $user = auth()->user();
+{
+    $user = auth()->user();
 
-        // Admin bisa lihat semua pemesanan
-        if ($user instanceof \App\Models\Admin) {
-            return response()->json(
-                Pemesanan::with(['pelanggan', 'layanan', 'pegawai'])->get()
-            );
-        }
-
-        // Pelanggan hanya bisa lihat miliknya sendiri
+    // Admin lihat semua
+    if ($user instanceof \App\Models\Admin) {
         return response()->json(
-            Pemesanan::with(['layanan', 'pegawai'])
-                ->where('id_pelanggan', $user->id_pelanggan)
-                ->get()
+            Pemesanan::with(['pelanggan', 'layanan', 'pegawai'])->get()
         );
     }
+
+    // Pelanggan lihat semua pesanan miliknya (termasuk dibatalkan)
+    return response()->json(
+        Pemesanan::with(['layanan', 'pegawai'])
+            ->where('id_pelanggan', $user->id_pelanggan)
+            ->get()
+    );
+}
+
 
     public function store(Request $request)
     {
@@ -85,22 +86,26 @@ class PemesananController extends Controller
     }
 
     public function destroy($id)
-    {
-        $pemesanan = Pemesanan::find($id);
+{
+    $pemesanan = Pemesanan::find($id);
 
-        if (!$pemesanan) {
-            return response()->json(['message' => 'Data tidak ditemukan'], 404);
-        }
-
-        $user = auth()->user();
-
-        // Hanya Admin dan Pelanggan terkait yang boleh hapus
-        if ($user instanceof \App\Models\Pelanggan && $pemesanan->id_pelanggan !== $user->id_pelanggan) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $pemesanan->delete();
-
-        return response()->json(['message' => 'Berhasil dihapus']);
+    if (!$pemesanan) {
+        return response()->json(['message' => 'Data tidak ditemukan'], 404);
     }
+
+    $user = auth()->user();
+
+    // Pelanggan hanya boleh membatalkan miliknya sendiri
+    if ($user instanceof \App\Models\Pelanggan && $pemesanan->id_pelanggan !== $user->id_pelanggan) {
+        return response()->json(['message' => 'Unauthorized'], 403);
+    }
+
+    // 🔥 Jangan hapus → cukup ubah status menjadi dibatalkan
+    $pemesanan->update([
+        'status_pemesanan' => 'dibatalkan'
+    ]);
+
+    return response()->json(['message' => 'Pesanan berhasil dibatalkan', 'data' => $pemesanan]);
+}
+
 }

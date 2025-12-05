@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Hash;
 
 class PelangganController extends Controller
 {
+    /* =====================================================
+     *  REGISTER PELANGGAN
+     * ===================================================== */
     public function register(Request $request)
     {
         $request->validate([
@@ -26,9 +29,15 @@ class PelangganController extends Controller
             'alamat' => $request->alamat,
         ]);
 
-        return response()->json(['message' => 'Register berhasil', 'data' => $pelanggan]);
+        return response()->json([
+            'message' => 'Register berhasil',
+            'data' => $pelanggan
+        ]);
     }
 
+    /* =====================================================
+     *  LOGIN PELANGGAN
+     * ===================================================== */
     public function login(Request $request)
     {
         $user = Pelanggan::where('email', strtolower($request->email))->first();
@@ -39,6 +48,68 @@ class PelangganController extends Controller
 
         $token = $user->createToken('token_pelanggan')->plainTextToken;
 
-        return response()->json(['message' => 'Login pelanggan berhasil', 'token' => $token, 'data' => $user]);
+        return response()->json([
+            'message' => 'Login pelanggan berhasil',
+            'token' => $token,
+            'data' => $user
+        ]);
+    }
+
+    /* =====================================================
+     *  ADMIN CRUD PELANGGAN
+     * ===================================================== */
+
+    // READ ALL
+    public function index()
+    {
+        return response()->json(Pelanggan::all());
+    }
+
+    // READ BY ID
+    public function show($id)
+    {
+        $pelanggan = Pelanggan::find($id);
+
+        if (!$pelanggan) {
+            return response()->json(['message' => 'Pelanggan tidak ditemukan'], 404);
+        }
+
+        return response()->json($pelanggan);
+    }
+
+    // UPDATE PELANGGAN OLEH ADMIN
+    public function update(Request $request, $id)
+    {
+        $pelanggan = Pelanggan::find($id);
+
+        if (!$pelanggan) {
+            return response()->json(['message' => 'Pelanggan tidak ditemukan'], 404);
+        }
+
+        $pelanggan->update([
+            'nama' => $request->nama ?? $pelanggan->nama,
+            'email' => strtolower($request->email) ?? $pelanggan->email,
+            'no_hp' => $request->no_hp ?? $pelanggan->no_hp,
+            'alamat' => $request->alamat ?? $pelanggan->alamat,
+        ]);
+
+        return response()->json([
+            'message' => 'Data berhasil diupdate',
+            'data' => $pelanggan
+        ]);
+    }
+
+    // DELETE DATA
+    public function destroy($id)
+    {
+        $pelanggan = Pelanggan::find($id);
+
+        if (!$pelanggan) {
+            return response()->json(['message' => 'Pelanggan tidak ditemukan'], 404);
+        }
+
+        $pelanggan->delete();
+
+        return response()->json(['message' => 'Data pelanggan berhasil dihapus']);
     }
 }
