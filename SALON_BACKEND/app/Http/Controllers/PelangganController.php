@@ -40,12 +40,23 @@ class PelangganController extends Controller
      * ===================================================== */
     public function login(Request $request)
     {
+        // cek apakah email ada
         $user = Pelanggan::where('email', strtolower($request->email))->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Email atau password salah'], 401);
+        if (!$user) {
+            return response()->json([
+                'message' => 'Email tidak ditemukan, silakan daftar.'
+            ], 404);
         }
 
+        // cek password
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'Password salah.'
+            ], 401);
+        }
+
+        // jika lolos validasi semua
         $token = $user->createToken('token_pelanggan')->plainTextToken;
 
         return response()->json([
@@ -54,7 +65,6 @@ class PelangganController extends Controller
             'data' => $user
         ]);
     }
-
     /* =====================================================
      *  ADMIN CRUD PELANGGAN
      * ===================================================== */

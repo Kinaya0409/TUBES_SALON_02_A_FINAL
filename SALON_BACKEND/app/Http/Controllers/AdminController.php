@@ -29,12 +29,25 @@ class AdminController extends Controller
     {
         $admin = Admin::where('email', strtolower($request->email))->first();
 
-        if (!$admin || !Hash::check($request->password, $admin->password)) {
-            return response()->json(['message' => 'Email atau password salah'], 401);
+        if (!$admin) {
+            return response()->json([
+                'message' => 'Email tidak ditemukan.'
+            ], 404);
+        }
+
+        if (!Hash::check($request->password, $admin->password)) {
+            return response()->json([
+                'message' => 'Password salah.'
+            ], 401);
         }
 
         $token = $admin->createToken('token_admin')->plainTextToken;
 
-        return response()->json(['message' => 'Login admin berhasil', 'token' => $token, 'data' => $admin]);
+        return response()->json([
+            'message' => 'Login admin berhasil',
+            'token' => $token,
+            'data' => $admin
+        ]);
     }
+
 }
