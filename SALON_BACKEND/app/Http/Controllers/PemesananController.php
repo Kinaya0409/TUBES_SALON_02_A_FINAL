@@ -73,11 +73,13 @@ class PemesananController extends Controller
         }
 
         $pemesanan->update([
-            'id_layanan' => $request->id_layanan,
-            'id_pegawai' => $request->id_pegawai,
-            'tanggal_booking' => $request->tanggal_booking,
-            'jam_booking' => $request->jam_booking
-        ]);
+    'id_layanan' => $request->id_layanan,
+    'id_pegawai' => $request->id_pegawai,
+    'tanggal_booking' => $request->tanggal_booking,
+    'jam_booking' => $request->jam_booking,
+    'status_pemesanan' => $request->status_pemesanan ?? $pemesanan->status_pemesanan
+]);
+
 
         return response()->json([
             'message' => 'Pemesanan berhasil diperbarui',
