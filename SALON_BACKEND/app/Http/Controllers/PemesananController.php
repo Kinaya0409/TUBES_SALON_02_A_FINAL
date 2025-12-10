@@ -102,7 +102,6 @@ class PemesananController extends Controller
         return response()->json(['message' => 'Unauthorized'], 403);
     }
 
-    // 🔥 Jangan hapus → cukup ubah status menjadi dibatalkan
     $pemesanan->update([
         'status_pemesanan' => 'dibatalkan'
     ]);
